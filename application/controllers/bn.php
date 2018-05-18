@@ -33,7 +33,7 @@ class Bn extends CI_Controller {
 		$onplay=$bingo->onplay;
 		if($number!=false)
 		{
-			$onplay.=$number.",";
+			$onplay.=",".$number;
 			$this->bingo->update(array('onplay'=>$onplay),array('id'=>$cel)); 
 		}
 		$de=explode(",",$onplay);

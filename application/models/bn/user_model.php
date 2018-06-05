@@ -2,7 +2,7 @@
 
 class User_model extends CI_Model {
 
-    const TABLE_NAME = 'bn_usuario';
+    const TABLE_NAME = 'bn_user';
 
     const PRI_INDEX = 'cellular';
 

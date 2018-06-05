@@ -25,11 +25,54 @@ class Bn extends CI_Controller {
 			echo "There was an error uploading the file, please try again!";
 		}
 	}
+	public function wins()
+	{	
+		$bingo=$this->bingo->get_all();
+		echo "<PRE>";		
+		print_r($bingo);
+		echo "</PRE>";		
+	}
+	public function winners()
+	{
+		$id=$this->input->post('id');
+		$bingo=$this->bingo->get(array('id'=>$id));
+		$winners->bingo_name=json_decode($bingo->bingo)->bingo_name;
+		foreach(explode(',',$bingo->winners) as $key=>$win)
+			$winners->tables[$key]= $this->user->get(array('cellular'=>$win));
+		echo json_encode($winners);
+	}
+	public function win()
+	{
+		$id=$this->input->post('id');
+		$cellular=$this->input->post('cellular');
+		
+		$bingo=$this->bingo->get(array('id'=>$id));
+		$_winners=$bingo->winners.",".$cellular;#
+		$winners=explode(",",$_winners);#
+		$n_winners=count($winners);#
+		if($n_winners<=6)
+		{
+			$tables=json_decode($bingo->tables_winners);#
+			
+			$tables->tables=(array)$tables->tables;
+			$tables->tables[count($tables->tables)-1]=json_decode($this->input->post('tables'));#
+			$_tables=json_encode($tables);#
+			$array=array('onplay'=>$bingo->onplay.",00","winners"=>$_winners,"tables_winners"=>$_tables);
+			$this->bingo->update($array,array('id'=>$id)); 
+			echo $n_winners;
+			return; 
+		}
+	} 
 	public function onplay()
 	{		
 		$cel=$this->input->post('cellular');
 		$number=$this->input->post('number');
 		$bingo=$this->bingo->get($cel);
+
+		$winners=explode(",",$bingo->winners);
+		if(count($winners)>4)
+		{dei("00");}
+
 		$onplay=$bingo->onplay;
 		if($number!=false)
 		{
@@ -40,7 +83,10 @@ class Bn extends CI_Controller {
 		echo $de[count($de)-1];
 	} 
 	public function foto($img)
-	{	redirect(base_url()."uploads/".$img);	}
+	{	
+		#echo file_get_contents(base_url()."uploads/".$img);
+		redirect(base_url()."uploads/".$img);
+	}
 
 	public function bingos()
 	{echo json_encode($this->bingo->get_all());}
